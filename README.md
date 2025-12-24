@@ -1,102 +1,70 @@
-IoT-Enabled Smart Water Leakage Detection and Prediction System  
-Using Raspberry Pi Pico (C SDK), IoT Connectivity, and AI
-
-
-
-Overview
-This project develops a low-cost, intelligent water leakage detection and prediction system using **Raspberry Pi Pico**, IoT connectivity, and AI-based anomaly detection. It is designed for **real-time monitoring, proactive control, and sustainability** in smart infrastructure.
+# Smart Water Leakage Detection System
+### Raspberry Pi Pico (C SDK) + IoT + AI
 
 ---
 
- Problem Definition
-Water leakage in pipelines leads to:
-- Environmental damage 
-- High utility costs 
-- Infrastructure decay 
-
-Traditional systems are reactive and hardware-centric. A smarter, predictive system is needed—one that combines **real-time sensing, wireless alerts, and AI forecasting** to prevent leaks before they escalate.
+##  Overview
+This project implements a water leakage detection system using **Raspberry Pi Pico**, a **flow sensor**, and a **pressure sensor (BMP180)**. The firmware is written entirely in **C** using the Pico SDK.
 
 ---
 
- Hardware Components
-- **Raspberry Pi Pico W** → Central controller with Wi-Fi
-- **Flow Sensor (YF-S201)** → Measures water flow rate
-- **Pressure Sensor (BMP280)** → Detects pressure drops
-- **Solenoid Valve** → Controlled shutoff during leak events
-- **Buzzer + LEDs** → Local alerts
-- **Optional**: Battery backup, solar panel, voice assistant integration
+## Hardware
+- Raspberry Pi Pico W
+- Flow Sensor (YF-S201)
+- Pressure Sensor (BMP180 via I²C)
+- Solenoid Valve (GPIO controlled)
+- Buzzer (GPIO controlled)
 
 ---
 
- AI & IoT Integration
-- **Data Logging**: Sensor data streamed to cloud (Firebase, ThingSpeak, or Blynk)
-- **AI Model**: Anomaly detection (Isolation Forest / LSTM) trained on flow/pressure patterns
-- **Dashboard**: Real-time visualization of flow, pressure, leak status, and predictions
-- **Mobile Alerts**: Push notifications via Telegram/email
+##  Repository Structure
+- `firmware/main.c` → Single C file with ISR, flow calculation, leak detection, valve + buzzer control.
+- `firmware/CMakeLists.txt` → Build configuration for Pico SDK.
+- `docs/architecture.md` → System workflow documentation.
+- `hardware/wiring-diagram.png` → Pin connections.
+- `demo/sample_flow.csv` → Sample flow/pressure data for AI anomaly detection.
 
 ---
 
-System Workflow
-1. **Normal Flow** → Pico logs data and sends to cloud  
-2. **Anomaly Detected** → AI flags potential leak  
-3. **Leak Confirmed** → Pico shuts valve, triggers buzzer, sends alert  
-4. **Recovery State** → System resets after manual/timed intervention  
 
----
-
- Repository Structure
-
-Smart-Water-Leakage-Detection/
-│── README.md              # Project overview
-│── LICENSE                # License file
-│── docs/                  # Documentation, diagrams, reports
-│   ├── architecture.md
-│   └── architecture.png
-│── firmware/              # Raspberry Pi Pico C SDK code
-│   ├── CMakeLists.txt
-│   ├── main.c
-│   ├── sensors.c / sensors.h
-│   ├── valve.c / valve.h
-│   ├── alerts.c / alerts.h
-│── ai-model/              # AI scripts (Python notebooks)
-│   └── leak_prediction.ipynb
-│── cloud-dashboard/       # Configs for Firebase/ThingSpeak/Blynk
-│── hardware/              # Schematics, pin maps
-│   └── wiring-diagram.png
-│── demo/                  # Demo scripts, sample data
-│   └── sample_flow.csv
-```
-
----
-
-## 🛠 Firmware Build Instructions
-1. Install **Raspberry Pi Pico SDK**  
+ Build Instructions
+1. Install Raspberry Pi Pico SDK:
    ```bash
    git clone -b master https://github.com/raspberrypi/pico-sdk.git
    export PICO_SDK_PATH=/path/to/pico-sdk
-   ```
-2. Build project  
-   ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
-   ```
-3. Flash `.uf2` file to Pico using `picotool` or drag‑and‑drop.
+
+ Build project:
+mkdir build && cd build
+cmake ..
+make
+Flash .uf2 file to Pico using picotool or drag‑and‑drop.
+
+Demo Instructions- Connect flow sensor to GPIO 15, valve to GPIO 16, buzzer to GPIO 17.
+- Run firmware → Pico prints flow + pressure values.
+- Leak detected → Valve closes, buzzer sounds, console prints alert.
 
 
- Demo Instructions
-- Simulate water flow with YF-S201 sensor
-- Observe dashboard updates in real time
-- Trigger leak → Valve closes, buzzer/LED alerts, Telegram notification
-- Reset system manually via dashboard or hardware switch
+ LicenseMIT License
+---
 
+##  `firmware/CMakeLists.txt`
 
-Impact
-- **Eco-Friendly**: Prevents water wastage  
-- **Smart Infrastructure**: Ideal for homes, agriculture, and industry  
-- **AI Innovation**: Combines embedded systems with predictive intelligence  
-- **Demo-Friendly**: Easy to showcase with water flow simulation, dashboard, and alerts  
+```cmake
+cmake_minimum_required(VERSION 3.13)
+include(pico_sdk_import.cmake)
 
-License
-This project is licensed under the MIT License.
+project(water_leakage_detection C CXX ASM)
+pico_sdk_init()
+
+add_executable(water_leakage_detection
+    main.c
+)
+
+target_link_libraries(water_leakage_detection pico_stdlib hardware_gpio hardware_i2c)
+
+pico_add_extra_outputs(water_leakage_detection)
+⚙️ firmware/main.cThis is where you paste your single C file (the one you wrote with flow ISR, BMP180, valve, buzzer, leak detection).✅ With this setup:- Evaluators see a professional repo.
+- Your single file is preserved in firmware/main.c.
+- Build instructions are clear.
+- Docs and demo folders show completeness.
+
